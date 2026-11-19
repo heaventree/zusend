@@ -9,7 +9,7 @@ This is the implementation checklist for the internal Heaventree workspace. Deve
 | Screenshot attachments | Inline preview for completed image uploads, including restored drafts. Existing upload progress and failure handling apply. | Windows Snipping Tool paste, image removal affordance, retry and draft switching while uploading. |
 | Workspace design | Initial navigation changes implemented. | Channel/topic header, visual hierarchy, responsive context panel and activity views. |
 | Android | Separate Flutter workstream. | Source and release baseline, then device tests for navigation, drafts, uploads, back navigation and push links. |
-| Support | OpenWA signature and event adapter plus transactional development storage for conversation claims, internal notes and queued replies. | Wire the authenticated staff API and UI, add a sending worker and media retrieval, then verify real test-number traffic. |
+| Support | Signed OpenWA webhook endpoint plus transactional development storage for conversation claims, internal notes and queued replies. | Wire the authenticated staff API and UI, add a sending worker and media retrieval, then verify real test-number traffic. |
 | Apps and workflows | Planned around existing Zulip bots, webhook and event integration points. | Approved installation, secret storage, destination permissions, health, test run, retry and audit. |
 | Shared files and meetings | Planned around existing access checks and the call-provider boundary. | Permission-aware files and links, then meeting metadata and provider handoffs. |
 
@@ -24,6 +24,6 @@ Keep this checklist current as changes land. Work on independent implementation 
 
 ## Support development checks
 
-Run `python -m unittest discover -s zusend_support -v` from the repository root. The fixtures exercise signed OpenWA events, retries, delivery receipts arriving out of order, transactional failure, single-agent assignment and reply intent deduplication. The prototype uses SQLite for local verification. The support API, role integration, outbound worker, media retention and production storage configuration are still pending.
+Run `python -m unittest discover -s zusend_support -v` from the repository root. The fixtures exercise signed OpenWA events, retries, delivery receipts arriving out of order, transactional failure, single-agent assignment and reply intent deduplication. The prototype uses SQLite for local verification. The WSGI webhook factory accepts signed events for one configured session at /webhooks/openwa. The staff API, role integration, outbound worker, media retention and production storage configuration are still pending.
 
 The adapter is based on the [WhatsAppOS webhook contract](https://github.com/heaventree/WhatsAppOS/blob/82189083f4c260fe4e432121d2b79991851549a1/docs/06-api-specification.md#66-webhook-events--delivery-semantics). The fixtures use a synthetic session, payloads and signing key.
