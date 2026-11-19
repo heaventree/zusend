@@ -90,6 +90,7 @@ export function initialize(): void {
     $("textarea#compose-textarea").on(
         "input",
         _.throttle(() => {
+            compose_ui.update_image_attachments();
             if ($("#compose").hasClass("preview_mode")) {
                 compose.render_preview_area();
             }

@@ -37,8 +37,18 @@
         </ul>
     </div>
     {{~!-- squash whitespace --~}}
+    {{#unless is_spectator}}
+        <div class="conversation-section-shortcuts">
+            <button type="button" id="jump-to-direct-messages" aria-controls="direct-messages-list">
+                <i class="zulip-icon zulip-icon-user" aria-hidden="true"></i>{{t "Direct messages"}}
+            </button>
+            <button type="button" id="jump-to-channels" aria-controls="streams_list">
+                <i class="zulip-icon zulip-icon-hashtag" aria-hidden="true"></i>{{t "Channels"}}
+            </button>
+        </div>
+    {{/unless}}
     <div id="left_sidebar_scroll_container" class="scrolling_list" data-simplebar data-simplebar-tab-index="-1">
-        <div id="direct-messages-section-header" class="left-sidebar-section-header direct-messages-container zoomed-out">
+        <div id="direct-messages-section-header" tabindex="-1" class="left-sidebar-section-header direct-messages-container zoomed-out">
             <i id="toggle-direct-messages-section-icon" class="zulip-icon zulip-icon-heading-triangle-right sidebar-heading-icon rotate-icon-down dm-tooltip-target" aria-hidden="true" tabindex="0" role="button"></i>
             <h4 class="left-sidebar-title"><span class="dm-tooltip-target">{{ LEFT_SIDEBAR_DIRECT_MESSAGES_TITLE }}</span></h4>
             <div class="left-sidebar-controls">
@@ -59,7 +69,7 @@
         <div class="direct-message-section-bottom-divider-container">
             <hr class="direct-message-section-bottom-divider"/>
         </div>
-        <div id="streams_list">
+        <div id="streams_list" tabindex="-1" aria-label="{{t 'Channels'}}">
             <div id="stream-filters-container">
                 <ul id="stream_filters" class="filters"></ul>
                 {{#unless is_guest }}

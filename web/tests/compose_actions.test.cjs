@@ -67,6 +67,7 @@ const compose_ui = mock_esm("../src/compose_ui", {
     autosize_textarea: noop,
     is_expanded: () => false,
     keep_compose_box_expanded: () => false,
+    update_image_attachments: noop,
     set_focus: noop,
     compute_placeholder_text: noop,
 });

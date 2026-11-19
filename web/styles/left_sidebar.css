@@ -2626,3 +2626,35 @@ body:not(.spectator-view)
         }
     }
 }
+
+.conversation-section-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 4px var(--left-sidebar-right-margin) 6px 5px;
+
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 7px;
+        color: var(--color-sidebar-action);
+        background: transparent;
+        border: 1px solid var(--color-border-compose-content);
+        border-radius: 6px;
+
+        &:hover {
+            color: var(--color-sidebar-action-hover);
+            background: var(--color-background-sidebar-action-hover);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-outline-focus);
+            outline-offset: -2px;
+        }
+    }
+}
+
+.left-sidebar.zoom-in .conversation-section-shortcuts {
+    display: none;
+}

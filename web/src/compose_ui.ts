@@ -521,6 +521,53 @@ export function make_compose_box_full_size(): void {
 const compose_preferences = localstorage();
 let keep_compose_expanded_for_session: boolean | undefined;
 
+export function get_image_attachment_paths(
+    content: string,
+    owner_document: Document = document,
+): string[] {
+    if (!content.includes("](/user_uploads/")) {
+        return [];
+    }
+    // Parse Markdown so escaped syntax and examples inside code stay text.
+    const template = owner_document.createElement("template");
+    template.innerHTML = markdown.parse_non_message(content);
+    const paths = new Set<string>();
+    for (const image of template.content.querySelectorAll("img")) {
+        const src = image.getAttribute("src");
+        if (
+            src !== null &&
+            /^\/user_uploads\/\d+\/(?:[\da-f]{1,2}\/)?[\w-]+\/[\w%().-]+\.(?:png|jpe?g|gif|webp|avif|bmp|heic)$/i.test(
+                src,
+            )
+        ) {
+            paths.add(src);
+        }
+    }
+    return [...paths];
+}
+
+export function update_image_attachments(): void {
+    const $attachments = $("#compose-image-attachments");
+    if ($attachments.length === 0) {
+        return;
+    }
+    const $textarea = $<HTMLTextAreaElement>("textarea#compose-textarea");
+    const paths = get_image_attachment_paths($textarea.val() ?? "");
+    if (_.isEqual($attachments.data("paths"), paths)) {
+        return;
+    }
+    $attachments
+        .data("paths", paths)
+        .empty()
+        .prop("hidden", paths.length === 0);
+    for (const path of paths) {
+        const name = path.split("/").at(-1)!;
+        $("<img>")
+            .attr({src: path, alt: name, title: name, loading: "lazy"})
+            .appendTo($attachments);
+    }
+}
+
 export function keep_compose_box_expanded(): boolean {
     return (
         keep_compose_expanded_for_session ??

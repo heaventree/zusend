@@ -1316,6 +1316,22 @@ export function initialize({
     initialize_tippy_tooltips();
     set_event_handlers({show_channel_feed});
 
+    $("#jump-to-direct-messages").on("click", () => {
+        scroll_util.get_left_sidebar_scroll_container().scrollTop(0);
+        if (pm_list.is_private_messages_collapsed()) {
+            pm_list.expand();
+        }
+        $("#direct-messages-section-header").get(0)?.focus({preventScroll: true});
+    });
+    $("#jump-to-channels").on("click", () => {
+        const $scroll = scroll_util.get_left_sidebar_scroll_container();
+        const $channels = $("#streams_list");
+        $scroll.scrollTop(
+            ($scroll.scrollTop() ?? 0) + get_selection_offset_from_top($channels, $scroll),
+        );
+        $channels.get(0)?.focus({preventScroll: true});
+    });
+
     function on_show_more_topics(e: JQuery.ClickEvent | JQuery.KeyDownEvent): void {
         zoom_in();
         // We define the focus behavior for the topic list search box

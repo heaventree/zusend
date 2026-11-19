@@ -681,6 +681,9 @@ export function setup_upload(config: Config): Uppy<Meta, TusBody> {
         }
 
         compose_ui.autosize_textarea($text_area);
+        if (config.mode === "compose") {
+            compose_ui.update_image_attachments();
+        }
 
         // Hide upload status after waiting 100ms after the 1s transition to 100%
         // so that the user can see the progress bar at 100%.

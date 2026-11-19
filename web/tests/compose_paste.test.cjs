@@ -51,6 +51,28 @@ stream_data.add_sub_for_tests(
     }),
 );
 
+run_test("image_attachment_paths", () => {
+    const image_path = "/user_uploads/2/a0/wETeF-Yv2wmMM6289kO9VC0s/screen.png";
+    const s3_path = "/user_uploads/2/wETeF-Yv2wmMM6289kO9VC0s/screen%20shot.webp";
+    const image = `![Screenshot](${image_path})`;
+    const content = [
+        image,
+        image,
+        `![S3 screenshot](${s3_path})`,
+        "![Code sample](/user_uploads/2/a0/example/code.png)".padStart(57, " "),
+        "![Escaped]\\(/user_uploads/2/a0/example/escaped.png)",
+        "![Remote](https://example.com/remote.png)",
+        "![Traversal](/user_uploads/2/a0/../outside.png)",
+        "![Audio](/user_uploads/2/a0/example/audio.mp3)",
+    ].join("\n\n");
+
+    assert.deepEqual(compose_ui.get_image_attachment_paths(content, window.document), [
+        image_path,
+        s3_path,
+    ]);
+    assert.deepEqual(compose_ui.get_image_attachment_paths("A draft", window.document), []);
+});
+
 run_test("try_stream_topic_syntax_text", () => {
     const test_cases = [
         [

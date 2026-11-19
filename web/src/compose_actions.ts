@@ -157,6 +157,7 @@ function clear_box(): void {
     compose_state.set_recipient_edited_manually(false);
     compose_state.set_is_content_unedited_restored_draft(false);
     clear_textarea();
+    compose_ui.update_image_attachments();
     compose_validate.check_overflow_text($("#send_message_form"));
     drafts.set_compose_draft_id(undefined);
     $("textarea#compose-textarea").toggleClass("invalid", false);
@@ -504,6 +505,7 @@ export let start = (raw_opts: ComposeActionsStartOpts): void => {
     if (!compose_ui.is_expanded() && compose_ui.keep_compose_box_expanded()) {
         compose_ui.make_compose_box_intermediate_size(false);
     }
+    compose_ui.update_image_attachments();
     complete_starting_tasks(opts);
 
     saved_snippets_ui.setup_saved_snippets_dropdown_widget_if_needed();

@@ -102,6 +102,7 @@ export function clear_compose_box(): void {
     compose_ui.reset_compose_box_size_after_send();
     clear_preview_area();
     $("textarea#compose-textarea").val("").trigger("focus");
+    compose_ui.update_image_attachments();
     compose_ui.compose_textarea_typeahead?.hide();
     compose_validate.check_overflow_text($("#send_message_form"));
     compose_validate.clear_topic_resolved_warning();
