@@ -237,3 +237,49 @@ def queue_reply(
         if existing is not None and tuple(existing) == (chat_id, agent_id, body):
             return False
         raise ConversationConflict("The case cannot accept this reply intent")
+
+
+def list_cases(
+    db: sqlite3.Connection,
+    session_id: str,
+    agent_id: str,
+    queue: str,
+    *,
+    limit: int = 50,
+) -> list[sqlite3.Row]:
+    """List cases in an inbox the authenticated agent may access."""
+    if not agent_id or not 1 <= limit <= 100:
+        raise ValueError("An agent and a valid page size are required")
+    filters = {
+        "unassigned": "assigned_agent IS NULL AND state = 'open'",
+        "mine": "assigned_agent = ? AND state = 'open'",
+        "waiting": "assigned_agent = ? AND state = 'waiting'",
+        "resolved": "assigned_agent = ? AND state = 'resolved'",
+    }
+    if queue not in filters:
+        raise ValueError("Unknown support queue")
+    parameters = (session_id, limit) if queue == "unassigned" else (session_id, agent_id, limit)
+    return db.execute(
+        f"""
+        SELECT chat_id, last_inbound_at, assigned_agent, state
+        FROM conversations
+        WHERE session_id = ? AND {filters[queue]}
+        ORDER BY last_inbound_at DESC, chat_id
+        LIMIT ?
+        """,
+        parameters,
+    ).fetchall()
+
+
+def resolve_case(db: sqlite3.Connection, session_id: str, chat_id: str, agent_id: str) -> bool:
+    """Resolve a case atomically if it still belongs to this agent."""
+    with db:
+        result = db.execute(
+            """
+            UPDATE conversations SET state = 'resolved'
+            WHERE session_id = ? AND chat_id = ? AND assigned_agent = ?
+              AND state IN ('open', 'waiting')
+            """,
+            (session_id, chat_id, agent_id),
+        )
+        return result.rowcount == 1

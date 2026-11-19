@@ -9,9 +9,9 @@ This is the implementation checklist for the internal Heaventree workspace. Deve
 | Screenshot attachments | Inline preview for completed image uploads, including restored drafts. Existing upload progress and failure handling apply. | Windows Snipping Tool paste, image removal affordance, retry and draft switching while uploading. |
 | Workspace design | Initial navigation changes implemented. | Channel/topic header, visual hierarchy, responsive context panel and activity views. |
 | Android | Separate Flutter workstream. | Source and release baseline, then device tests for navigation, drafts, uploads, back navigation and push links. |
-| Support | Signed OpenWA webhook endpoint plus transactional development storage for conversation claims, internal notes and queued replies. | Wire the authenticated staff API and UI, add a sending worker and media retrieval, then verify real test-number traffic. |
+| Support | Signed OpenWA webhook endpoint plus transactional development storage for queue views, case claims and resolution, internal notes and queued replies. | Wire the authenticated staff API and UI, add a sending worker and media retrieval, then verify real test-number traffic. |
 | Apps and workflows | Planned around existing Zulip bots, webhook and event integration points. | Approved installation, secret storage, destination permissions, health, test run, retry and audit. |
-| Shared files and meetings | Planned around existing access checks and the call-provider boundary. | Permission-aware files and links, then meeting metadata and provider handoffs. |
+| Shared files and meetings | Files and Links shortcuts use the existing access-checked search. Meetings remain on the call-provider workstream. | Verify scoped search in each conversation type. Add a richer shared-content view, meeting metadata and provider handoffs. |
 
 ## Pinned blockers and decisions
 

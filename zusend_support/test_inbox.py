@@ -9,8 +9,10 @@ from zusend_support.inbox import (
     accept_event,
     add_internal_note,
     claim_conversation,
+    list_cases,
     open_inbox,
     queue_reply,
+    resolve_case,
 )
 from zusend_support.openwa import Connection, Event, Message, Receipt
 
@@ -89,3 +91,21 @@ class InboxTest(unittest.TestCase):
         self.assertFalse(queue_reply(self.db, session_id, chat_id, "agent-1", "intent-1", "Reply"))
         self.assertEqual(self.db.execute("SELECT state FROM conversations").fetchone()[0], "open")
         self.assertEqual(self.db.execute("SELECT count(*) FROM reply_outbox").fetchone()[0], 1)
+
+    def test_queue_filters_and_resolution_are_agent_and_session_scoped(self) -> None:
+        message = Message("a@lid", "in-1", "inbound", 100, "text", "Hello", False)
+        accept_event(self.db, self.event("event-a", message))
+        self.assertEqual(len(list_cases(self.db, "test-session", "alice", "unassigned")), 1)
+        self.assertEqual(list_cases(self.db, "another-session", "alice", "unassigned"), [])
+        self.assertTrue(claim_conversation(self.db, "test-session", "a@lid", "alice"))
+        self.assertEqual(list_cases(self.db, "test-session", "bob", "mine"), [])
+        self.assertEqual(list_cases(self.db, "test-session", "alice", "mine")[0]["chat_id"], "a@lid")
+        self.assertFalse(resolve_case(self.db, "test-session", "a@lid", "bob"))
+        self.assertTrue(resolve_case(self.db, "test-session", "a@lid", "alice"))
+        self.assertEqual(list_cases(self.db, "test-session", "alice", "mine"), [])
+        self.assertEqual(len(list_cases(self.db, "test-session", "alice", "resolved")), 1)
+
+        newer = Message("a@lid", "in-2", "inbound", 200, "text", "Following up", False)
+        accept_event(self.db, self.event("event-b", newer))
+        self.assertEqual(len(list_cases(self.db, "test-session", "alice", "mine")), 1)
+        self.assertEqual(list_cases(self.db, "test-session", "alice", "resolved"), [])

@@ -29,6 +29,7 @@ type MessageViewHeaderContext = {
     is_admin?: boolean;
     stream?: StreamSubscription;
     stream_settings_link?: string;
+    shared_content?: {files: string; links: string} | undefined;
 } & (
     | {
           zulip_icon: string;
@@ -93,11 +94,26 @@ function get_message_view_header_context(filter: Filter | undefined): MessageVie
     const description = filter.get_description()?.description;
     const link = filter.get_description()?.link;
     assert(title !== undefined);
+    const is_conversation =
+        narrow_state.narrowed_by_reply(filter) || narrow_state.narrowed_by_stream_reply(filter);
+    const shared_content = is_conversation
+        ? {
+              files: hash_util.search_terms_to_hash([
+                  ...filter.terms(),
+                  {operator: "has", operand: "attachment"},
+              ]),
+              links: hash_util.search_terms_to_hash([
+                  ...filter.terms(),
+                  {operator: "has", operand: "link"},
+              ]),
+          }
+        : undefined;
     const context = filter.add_icon_data({
         title,
         description,
         link,
         is_spectator: page_params.is_spectator,
+        ...(shared_content && {shared_content}),
     });
 
     if (filter.has_operator("channel")) {
@@ -107,6 +123,7 @@ function get_message_view_header_context(filter: Filter | undefined): MessageVie
         if (!current_stream) {
             return {
                 ...context,
+                shared_content: undefined,
                 sub_count: "0",
                 formatted_sub_count: "0",
                 rendered_narrow_description: $t({

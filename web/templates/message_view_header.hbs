@@ -37,3 +37,10 @@
     </span>
 {{/if}}
 {{/if}}
+
+{{#if shared_content}}
+    <div class="shared-content-shortcuts" role="group" aria-label="{{t 'Shared in this conversation'}}">
+        <a href="{{shared_content.files}}" title="{{t 'Find messages with attachments'}}">{{t "Files"}}</a>
+        <a href="{{shared_content.links}}" title="{{t 'Find messages with links'}}">{{t "Links"}}</a>
+    </div>
+{{/if}}
