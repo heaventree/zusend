@@ -99,14 +99,7 @@ export function render_preview_area(): void {
 }
 
 export function clear_compose_box(): void {
-    /* Before clearing the compose box, we reset it to the
-     * default/normal size. Note that for locally echoed messages, we
-     * will have already done this action before echoing the message
-     * to avoid the compose box triggering "new message out of view"
-     * notifications incorrectly. */
-    if (compose_ui.is_expanded()) {
-        compose_ui.make_compose_box_original_size();
-    }
+    compose_ui.reset_compose_box_size_after_send();
     clear_preview_area();
     $("textarea#compose-textarea").val("").trigger("focus");
     compose_ui.compose_textarea_typeahead?.hide();

@@ -496,6 +496,9 @@ export let start = (raw_opts: ComposeActionsStartOpts): void => {
     resize.reset_compose_message_max_height();
     compose_tooltips.initialize_compose_tooltips("compose", "#compose .compose_button_tooltip");
 
+    if (!compose_ui.is_expanded() && compose_ui.keep_compose_box_expanded()) {
+        compose_ui.make_compose_box_intermediate_size(false);
+    }
     complete_starting_tasks(opts);
 
     saved_snippets_ui.setup_saved_snippets_dropdown_widget_if_needed();
@@ -644,6 +647,13 @@ export function on_narrow(opts: NarrowActivateOpts): void {
 
     if (narrow_state.narrowed_by_topic_reply()) {
         on_topic_narrow();
+        if (!compose_state.composing() && compose_ui.keep_compose_box_expanded()) {
+            start({
+                message_type: "stream",
+                skip_scrolling_selected_message: true,
+                defer_focus: true,
+            });
+        }
         return;
     }
 

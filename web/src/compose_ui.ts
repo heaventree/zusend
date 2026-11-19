@@ -23,6 +23,7 @@ import type {TypeaheadSuggestion} from "./composebox_typeahead.ts";
 import {$t, $t_html} from "./i18n.ts";
 import * as linkifiers from "./linkifiers.ts";
 import * as loading from "./loading.ts";
+import {localstorage} from "./localstorage.ts";
 import * as markdown from "./markdown.ts";
 import {message_render_response_schema} from "./message_store.ts";
 import * as people from "./people.ts";
@@ -517,7 +518,39 @@ export function make_compose_box_full_size(): void {
     $("textarea#compose-textarea").trigger("focus");
 }
 
-export function make_compose_box_intermediate_size(): void {
+const compose_preferences = localstorage();
+let keep_compose_expanded_for_session: boolean | undefined;
+
+export function keep_compose_box_expanded(): boolean {
+    return (
+        keep_compose_expanded_for_session ??
+        compose_preferences.get(`compose-expanded:${current_user.user_id}`) === true
+    );
+}
+
+export function set_keep_compose_box_expanded(expanded: boolean): void {
+    keep_compose_expanded_for_session = expanded;
+    try {
+        compose_preferences.set(`compose-expanded:${current_user.user_id}`, expanded);
+    } catch {
+        // Keep the preference for this page when browser storage is unavailable.
+    }
+}
+
+export function reset_compose_box_size_after_send(): void {
+    if (!is_expanded()) {
+        return;
+    }
+    if (keep_compose_box_expanded()) {
+        if (is_full_size()) {
+            make_compose_box_intermediate_size(false);
+        }
+        return;
+    }
+    make_compose_box_original_size();
+}
+
+export function make_compose_box_intermediate_size(focus = true): void {
     set_expanded_status(true, false);
 
     // The autosize should be destroyed for the intermediate size compose
@@ -531,7 +564,9 @@ export function make_compose_box_intermediate_size(): void {
     // Unset the `top` property of compose-box.
     set_compose_box_top(false);
 
-    $("textarea#compose-textarea").trigger("focus");
+    if (focus) {
+        $("textarea#compose-textarea").trigger("focus");
+    }
 }
 
 export function make_compose_box_original_size(): void {

@@ -690,6 +690,32 @@ run_test("test_compose_height_changes", ({override, override_rewire}) => {
     assert.ok(!compose_box_top_set);
 });
 
+run_test("keeps_expanded_compose_box_after_send", ({override, override_rewire}) => {
+    override(autosize, "destroy", noop);
+    override_rewire(compose_ui, "set_compose_box_top", noop);
+    $("textarea#compose-textarea").set_height(100);
+    $("#compose .preview_message_area").set_height(100);
+
+    try {
+        compose_ui.set_keep_compose_box_expanded(true);
+        compose_ui.make_compose_box_intermediate_size();
+        compose_ui.reset_compose_box_size_after_send();
+        assert.ok($("#compose").hasClass("compose-intermediate"));
+
+        compose_ui.make_compose_box_full_size();
+        compose_ui.reset_compose_box_size_after_send();
+        assert.ok($("#compose").hasClass("compose-intermediate"));
+        assert.ok(!$("#compose").hasClass("compose-fullscreen"));
+
+        compose_ui.set_keep_compose_box_expanded(false);
+        compose_ui.reset_compose_box_size_after_send();
+        assert.ok(!compose_ui.is_expanded());
+    } finally {
+        compose_ui.set_keep_compose_box_expanded(false);
+        compose_ui.make_compose_box_original_size();
+    }
+});
+
 const $textarea = $("textarea#compose-textarea");
 $textarea[0].click = () => {};
 

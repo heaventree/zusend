@@ -344,9 +344,7 @@ export let try_deliver_locally = (
     // always triggered on the top of compose-box, regardless of
     // whether the message would be visible after shrinking compose,
     // because compose occludes the whole screen in full size state.
-    if (compose_ui.is_expanded()) {
-        compose_ui.make_compose_box_original_size();
-    }
+    compose_ui.reset_compose_box_size_after_send();
 
     const message = insert_local_message(message_request, local_id_float, insert_new_messages);
     return message;

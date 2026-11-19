@@ -66,6 +66,7 @@ const compose_pm_pill = mock_esm("../src/compose_pm_pill");
 const compose_ui = mock_esm("../src/compose_ui", {
     autosize_textarea: noop,
     is_expanded: () => false,
+    keep_compose_box_expanded: () => false,
     set_focus: noop,
     compute_placeholder_text: noop,
 });
@@ -1036,6 +1037,18 @@ test("on_narrow", ({override, override_rewire}) => {
         force_close: false,
     });
     assert.ok(on_topic_narrow_called);
+
+    let topic_compose_options;
+    override_rewire(compose_actions, "start", (opts) => {
+        topic_compose_options = opts;
+    });
+    override(compose_ui, "keep_compose_box_expanded", () => true);
+    compose_actions.on_narrow({force_close: false});
+    assert.deepEqual(topic_compose_options, {
+        message_type: "stream",
+        skip_scrolling_selected_message: true,
+        defer_focus: true,
+    });
 
     let update_message_list_called = false;
     narrowed_by_topic_reply = false;

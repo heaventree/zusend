@@ -621,6 +621,7 @@ export function initialize(): void {
         e.preventDefault();
         e.stopPropagation();
 
+        compose_ui.set_keep_compose_box_expanded(true);
         compose_ui.make_compose_box_intermediate_size();
     });
 
@@ -641,6 +642,7 @@ export function initialize(): void {
         e.preventDefault();
         e.stopPropagation();
 
+        compose_ui.set_keep_compose_box_expanded(false);
         compose_ui.make_compose_box_original_size();
     });
 
