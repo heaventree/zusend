@@ -105,6 +105,10 @@ type StreamWildcardOptions = {
 
 export let wildcard_mention_threshold = 15;
 
+export function has_upload_in_progress(): boolean {
+    return upload_in_progress;
+}
+
 export function set_upload_in_progress(status: boolean): void {
     upload_in_progress = status;
     validate_and_update_send_button_status();

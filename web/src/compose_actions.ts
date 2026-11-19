@@ -47,6 +47,7 @@ type ComposeActionsStartOpts = {
     content?: string;
     draft_id?: string;
     skip_scrolling_selected_message?: boolean;
+    save_short_draft_on_switch?: boolean;
     is_reply?: boolean;
     keep_composebox_empty?: boolean | undefined;
     defer_focus?: boolean | undefined;
@@ -383,7 +384,11 @@ export let start = (raw_opts: ComposeActionsStartOpts): void => {
         compose_state.composing() &&
         (!same_recipient_as_before(opts) || opts.content !== undefined)
     ) {
-        drafts.update_draft();
+        drafts.update_draft(
+            opts.save_short_draft_on_switch && compose_state.has_message_content()
+                ? {force_save: true}
+                : {},
+        );
         clear_box();
     }
 
@@ -645,19 +650,38 @@ export function on_narrow(opts: NarrowActivateOpts): void {
         return;
     }
 
-    if (narrow_state.narrowed_by_topic_reply()) {
-        on_topic_narrow();
-        if (!compose_state.composing() && compose_ui.keep_compose_box_expanded()) {
-            start({
-                message_type: "stream",
-                skip_scrolling_selected_message: true,
-                defer_focus: true,
-            });
-        }
+    if (compose_validate.has_upload_in_progress()) {
+        compose_fade.update_message_list();
         return;
     }
 
-    if (compose_state.has_novel_message_content() || compose_state.is_recipient_edited_manually()) {
+    const follow_conversation =
+        compose_ui.keep_compose_box_expanded() && !compose_state.is_recipient_edited_manually();
+
+    if (narrow_state.narrowed_by_topic_reply()) {
+        if (follow_conversation) {
+            const {stream_id} = narrow_state.set_compose_defaults();
+            const stream =
+                stream_id === undefined ? undefined : stream_data.get_sub_by_id(stream_id);
+            if (stream && stream_data.can_post_messages_in_stream(stream)) {
+                start({
+                    message_type: "stream",
+                    skip_scrolling_selected_message: true,
+                    defer_focus: true,
+                    save_short_draft_on_switch: true,
+                });
+                return;
+            }
+        }
+        on_topic_narrow();
+        return;
+    }
+
+    if (
+        compose_state.is_recipient_edited_manually() ||
+        (compose_state.has_novel_message_content() &&
+            !(follow_conversation && narrow_state.narrowed_by_pm_reply()))
+    ) {
         compose_fade.update_message_list();
         return;
     }
@@ -693,6 +717,7 @@ export function on_narrow(opts: NarrowActivateOpts): void {
 
         start({
             message_type: "private",
+            save_short_draft_on_switch: follow_conversation,
             // Skip attempting an animated adjustment to scroll
             // position, which is useless because we are called before
             // the narrowing process has set the view's scroll

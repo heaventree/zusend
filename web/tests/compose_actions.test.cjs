@@ -1042,13 +1042,25 @@ test("on_narrow", ({override, override_rewire}) => {
     override_rewire(compose_actions, "start", (opts) => {
         topic_compose_options = opts;
     });
-    override(compose_ui, "keep_compose_box_expanded", () => true);
+    let keep_expanded = true;
+    override(compose_ui, "keep_compose_box_expanded", () => keep_expanded);
+    const topic_stream = make_stream({stream_id: 97, name: "Project"});
+    override(narrow_state, "set_compose_defaults", () => ({
+        stream_id: topic_stream.stream_id,
+        topic: "Updates",
+    }));
+    stream_data.add_sub_for_tests(topic_stream);
+    override_rewire(stream_data, "can_post_messages_in_stream", () => true);
+    compose_state.message_content("Unsent draft");
     compose_actions.on_narrow({force_close: false});
     assert.deepEqual(topic_compose_options, {
         message_type: "stream",
         skip_scrolling_selected_message: true,
         defer_focus: true,
+        save_short_draft_on_switch: true,
     });
+    keep_expanded = false;
+    stream_data.clear_subscriptions();
 
     let update_message_list_called = false;
     narrowed_by_topic_reply = false;
@@ -1063,8 +1075,10 @@ test("on_narrow", ({override, override_rewire}) => {
 
     compose_state.message_content("");
     let start_called = false;
-    override_rewire(compose_actions, "start", () => {
+    let dm_compose_options;
+    override_rewire(compose_actions, "start", (opts) => {
         start_called = true;
+        dm_compose_options = opts;
     });
     narrowed_by_pm_reply = true;
     override(realm, "realm_direct_message_permission_group", nobody.id);
@@ -1088,6 +1102,15 @@ test("on_narrow", ({override, override_rewire}) => {
         trigger: "not-search",
     });
     assert.ok(start_called);
+
+    keep_expanded = true;
+    dm_compose_options = undefined;
+    compose_state.message_content("Unsent topic draft");
+    compose_actions.on_narrow({force_close: false});
+    assert.equal(dm_compose_options.message_type, "private");
+    assert.equal(dm_compose_options.save_short_draft_on_switch, true);
+    keep_expanded = false;
+    compose_state.message_content("");
 
     start_called = false;
     compose_defaults = {
