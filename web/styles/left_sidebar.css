@@ -2658,3 +2658,39 @@ body:not(.spectator-view)
 .left-sidebar.zoom-in .conversation-section-shortcuts {
     display: none;
 }
+
+.workspace-destinations {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0 var(--left-sidebar-right-margin) 10px 5px;
+    padding: 5px;
+    border: 1px solid var(--color-border-compose-content);
+    border-radius: 10px;
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        padding: 6px;
+        border-radius: 6px;
+        color: var(--color-sidebar-action);
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+            color: var(--color-sidebar-action-hover);
+            background: var(--color-background-sidebar-action-hover);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--color-outline-focus);
+            outline-offset: -2px;
+        }
+    }
+}
+
+.left-sidebar.zoom-in .workspace-destinations {
+    display: none;
+}

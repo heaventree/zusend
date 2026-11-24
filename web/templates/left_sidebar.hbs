@@ -1,4 +1,12 @@
 <div class="left-sidebar" id="left-sidebar" role="navigation">
+    {{#unless is_spectator}}
+        <div class="workspace-destinations" role="group" aria-label="{{t 'Workspace navigation'}}">
+            <a href="#inbox"><i class="zulip-icon zulip-icon-inbox" aria-hidden="true"></i>{{t "Inbox"}}</a>
+            <a href="#narrow/is/mentioned"><span aria-hidden="true">@</span>{{t "Mentions"}}</a>
+            <a href="#narrow/is/starred"><span aria-hidden="true">★</span>{{t "Saved"}}</a>
+            <a href="#drafts"><i class="zulip-icon zulip-icon-edit" aria-hidden="true"></i>{{t "Drafts"}}</a>
+        </div>
+    {{/unless}}
     <div id="left-sidebar-search">
         <div class="input-wrapper-for-tooltip tippy-zulip-delayed-tooltip" data-tooltip-template-id="filter-left-sidebar-tooltip-template">
             {{#> components/input_wrapper input_type="filter-input" custom_classes="left-sidebar-search-section" icon="search" input_button_icon="close"}}
