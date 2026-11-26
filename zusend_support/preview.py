@@ -49,6 +49,8 @@ def seed(db: sqlite3.Connection) -> None:
             ("Alex Morgan", "Can you confirm when the replacement will arrive?"),
             ("Casey Byrne", "I need a copy of my invoice, please."),
             ("Jamie Reid", "Could someone help me update my account details?"),
+            ("Taylor Walsh", "Thanks, the replacement arrived this morning."),
+            ("Morgan Quinn", "Is there a tracking link for order 1842?"),
         ],
         start=1,
     ):
@@ -61,6 +63,14 @@ def seed(db: sqlite3.Connection) -> None:
                 Message(contact, str(index), "inbound", index, "text", body, False),
             ),
         )
+
+
+    claim_conversation(db, SESSION, "Jamie Reid", AGENT)
+    add_internal_note(db, SESSION, "Jamie Reid", AGENT, "Check which details need updating.")
+    claim_conversation(db, SESSION, "Morgan Quinn", AGENT)
+    queue_reply(db, SESSION, "Morgan Quinn", AGENT, "preview-reply", "I will check the tracking details.")
+    claim_conversation(db, SESSION, "Taylor Walsh", AGENT)
+    resolve_case(db, SESSION, "Taylor Walsh", AGENT)
 
 
 def preview_app(path: Path, port: int):
@@ -129,6 +139,9 @@ def preview_app(path: Path, port: int):
             case = next((entry for entry in cases if entry["chat_id"] == chat), None)
             if chat and case is None:
                 return respond("404 Not Found", "Case not found in this queue.")
+            if case is None and cases:
+                redirect = "/?" + urlencode({"queue": queue, "chat": cases[0]["chat_id"]})
+                return respond("303 See Other", "", [("Location", redirect)])
             return respond("200 OK", render(db, queue, cases, case, token))
 
     return app
@@ -146,7 +159,7 @@ def render(db, queue, cases, case, token) -> str:
         f'{esc(entry["chat_id"])}</a>'
         for entry in cases
     )
-    panel = "<p>Select a case to read the conversation.</p>"
+    panel = "<p>This queue is empty. Select another queue to view its cases.</p>"
     if case:
         chat = case["chat_id"]
         panel = f"<h2>{esc(chat)}</h2><p class=notice>{esc(case['state'].title())}</p>"

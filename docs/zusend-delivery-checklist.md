@@ -31,4 +31,4 @@ The adapter is based on the [WhatsAppOS webhook contract](https://github.com/hea
 
 ### Run the staff Support preview
 
-Run `python -m zusend_support.preview` from the repository root and open `http://127.0.0.1:8765`. The preview binds to loopback and seeds a temporary database with three synthetic cases. Staff actions exercise the same local inbox storage used by the signed webhook endpoint. The preview uses a synthetic agent and never sends WhatsApp traffic. Restart the preview to reset the fixtures.
+Run `python -m zusend_support.preview` from the repository root and open `http://127.0.0.1:8765`. The preview binds to loopback and seeds a temporary database with five synthetic cases across all four queues. Staff actions exercise the same local inbox storage used by the signed webhook endpoint. The preview uses a synthetic agent and never sends WhatsApp traffic. Restart the preview to reset the fixtures.
