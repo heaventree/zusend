@@ -2659,38 +2659,86 @@ body:not(.spectator-view)
     display: none;
 }
 
+.app-main .column-left .left-sidebar:has(> .workspace-destinations) {
+    --zusend-rail-width: 54px;
+    --zusend-sidebar-surface: light-dark(hsl(190deg 21% 95%), hsl(195deg 29% 13%));
+
+    padding-inline-start: calc(var(--zusend-rail-width) + 8px);
+    background: var(--zusend-sidebar-surface);
+    border-inline-end: 1px solid light-dark(hsl(195deg 22% 86%), hsl(198deg 20% 25%));
+
+    #left-sidebar-search {
+        background: var(--zusend-sidebar-surface);
+    }
+}
+
+.zusend-workspace-heading {
+    padding: 8px 8px 10px;
+    color: light-dark(hsl(194deg 47% 16%), hsl(185deg 52% 96%));
+    font-size: 1.25rem;
+    font-weight: 750;
+    letter-spacing: -0.04em;
+}
+
 .workspace-destinations {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 4px;
-    margin: 0 var(--left-sidebar-right-margin) 10px 5px;
-    padding: 5px;
-    border: 1px solid var(--color-border-compose-content);
-    border-radius: 10px;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--zusend-rail-width);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: calc(var(--navbar-fixed-height) + 10px) 4px 8px;
+    overflow-y: auto;
+    background: hsl(195deg 56% 14%);
 
     a {
         display: flex;
+        min-height: 42px;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
-        gap: 6px;
-        min-width: 0;
-        padding: 6px;
-        border-radius: 6px;
-        color: var(--color-sidebar-action);
-        font-weight: 600;
+        gap: 2px;
+        border-radius: 9px;
+        color: hsl(189deg 48% 89%);
+        font-size: 0.6875rem;
+        line-height: 1.1;
         text-decoration: none;
 
         &:hover {
-            color: var(--color-sidebar-action-hover);
-            background: var(--color-background-sidebar-action-hover);
+            color: hsl(0deg 0% 100%);
+            background: hsl(197deg 41% 27%);
         }
 
         &:focus-visible {
-            outline: 2px solid var(--color-outline-focus);
+            outline: 2px solid hsl(165deg 62% 76%);
             outline-offset: -2px;
+        }
+
+        .zulip-icon,
+        .zusend-rail-icon {
+            font-size: 1.1rem;
+        }
+    }
+
+    .zusend-workspace-mark {
+        min-height: 36px;
+        margin: 0 4px 4px;
+        background: hsl(163deg 64% 78%);
+        color: hsl(195deg 56% 14%);
+        font-size: 1.2rem;
+        font-weight: 800;
+
+        &:hover {
+            color: hsl(195deg 56% 14%);
+            background: hsl(163deg 70% 85%);
         }
     }
 }
 
-.left-sidebar.zoom-in .workspace-destinations {
-    display: none;
+.left-sidebar.zoom-in {
+    .workspace-destinations,
+    .zusend-workspace-heading {
+        visibility: hidden;
+    }
 }

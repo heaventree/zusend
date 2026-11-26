@@ -177,8 +177,8 @@
     background-color: var(--color-compose-box-background);
     padding: 4px 4px 6px;
     border: 1px solid var(--color-border-compose-content);
-    border-radius: 9px 9px 0 0;
-    box-shadow: 0 0 0 hsl(236deg 11% 28%);
+    border-radius: 13px 13px 0 0;
+    box-shadow: 0 -5px 18px light-dark(hsl(195deg 52% 15% / 6%), hsl(0deg 0% 0% / 20%));
     height: 100%;
     display: flex;
     flex-flow: column;

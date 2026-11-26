@@ -82,7 +82,8 @@
     }
 
     .message-header-navbar-title {
-        font-weight: 600;
+        font-weight: 720;
+        letter-spacing: -0.02em;
         /* 16px at 14px em */
         font-size: 1.1429em;
         /* Allow long navbar titles (e.g., stream names) to collapse. */

@@ -1,11 +1,13 @@
 <div class="left-sidebar" id="left-sidebar" role="navigation">
     {{#unless is_spectator}}
         <div class="workspace-destinations" role="group" aria-label="{{t 'Workspace navigation'}}">
-            <a href="#inbox"><i class="zulip-icon zulip-icon-inbox" aria-hidden="true"></i>{{t "Inbox"}}</a>
-            <a href="#narrow/is/mentioned"><span aria-hidden="true">@</span>{{t "Mentions"}}</a>
-            <a href="#narrow/is/starred"><span aria-hidden="true">★</span>{{t "Saved"}}</a>
-            <a href="#drafts"><i class="zulip-icon zulip-icon-edit" aria-hidden="true"></i>{{t "Drafts"}}</a>
+            <a href="#inbox" class="zusend-workspace-mark" aria-label="Zusend">Z</a>
+            <a href="#inbox"><i class="zulip-icon zulip-icon-inbox" aria-hidden="true"></i><span>{{t "Inbox"}}</span></a>
+            <a href="#narrow/is/mentioned"><span class="zusend-rail-icon" aria-hidden="true">@</span><span>{{t "Mentions"}}</span></a>
+            <a href="#narrow/is/starred"><span class="zusend-rail-icon" aria-hidden="true">☆</span><span>{{t "Saved"}}</span></a>
+            <a href="#drafts"><i class="zulip-icon zulip-icon-edit" aria-hidden="true"></i><span>{{t "Drafts"}}</span></a>
         </div>
+        <div class="zusend-workspace-heading">Zusend</div>
     {{/unless}}
     <div id="left-sidebar-search">
         <div class="input-wrapper-for-tooltip tippy-zulip-delayed-tooltip" data-tooltip-template-id="filter-left-sidebar-tooltip-template">
