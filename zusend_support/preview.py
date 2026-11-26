@@ -8,8 +8,9 @@ import tempfile
 from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
+from socketserver import ThreadingMixIn
 from urllib.parse import parse_qs, urlencode
-from wsgiref.simple_server import make_server
+from wsgiref.simple_server import WSGIServer, make_server
 
 from zusend_support.inbox import (
     ConversationConflict,
@@ -192,6 +193,16 @@ def action_form(token: str, action: str, button: str, label: str = "") -> str:
     )
 
 
+class PreviewServer(ThreadingMixIn, WSGIServer):
+    # Browser preconnections can sit idle before they send any HTTP bytes.
+    daemon_threads = True
+
+    def get_request(self):
+        connection, address = super().get_request()
+        connection.settimeout(10)
+        return connection, address
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8765)
@@ -200,7 +211,9 @@ def main() -> None:
         path = Path(folder) / "support.sqlite"
         with closing(open_inbox(path)) as db:
             seed(db)
-        with make_server("127.0.0.1", opts.port, preview_app(path, opts.port)) as server:
+        with make_server(
+            "127.0.0.1", opts.port, preview_app(path, opts.port), server_class=PreviewServer
+        ) as server:
             print(f"Zusend Support preview at http://127.0.0.1:{opts.port}", flush=True)
             server.serve_forever()
 
